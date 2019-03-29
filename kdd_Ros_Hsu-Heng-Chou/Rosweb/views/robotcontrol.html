@@ -1,0 +1,146 @@
+<!doctype html>
+    <html lang="zh-Hant-TW" >
+        <head>
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+                        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+            <meta name="description" content="">
+            <meta name="author" content="">
+            <link rel="icon" href="favicon.ico">
+            <title>知識探索與資料探勘實驗室-機器人導航</title>
+            <!-- Bootstrap core CSS -->
+            <link href="http://localhost:3000/stylesheets/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+                        <!-- Custom styles for this template -->
+            <link href="http://localhost:3000/stylesheets/jquery.bxslider.css" rel="stylesheet">
+            <link href="http://localhost:3000/stylesheets/style.css" rel="stylesheet">
+        </head>
+       
+        
+        
+ 
+    <body ng-app="robot" onload=" nav_and_map_init();">
+        
+        <!-- Navigation -->
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        </button>
+                    </div>
+                    <div id="navbar" class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li ><a href="/index">首頁</a></li>
+                            <li class="active"><a href="/robotcontrol">監控機器人</a></li>
+                            <li><a href="#contact">遠端遙控</a></li>
+                            <li><a href="#contact">目標設定</a></li>
+                            <li><a href="about.html">關於我們</a></li>
+                            <li><a href="about.html">聯絡我們</a></li>
+                        </ul>
+    
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="#"><i class="fa fa-sign-in"></i></a></li>
+                            <li><a href="#"><i class="fa fa-sign-out"></i></a></li>
+                            <li><a href="#"><i class="fa fa-user"></i></a></li>
+                            <li><a href="#"><i class="fa fa-github"></i></a></li>
+                            <!-- <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                            <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                            <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+                            <li><a href="#"><i class="fa fa-reddit"></i></a></li> -->
+                        </ul>
+    
+                    </div>
+                    <!--/.nav-collapse -->
+                </div>
+            </nav>
+            
+        <div class="container" ng-controller="AppCtrl">
+                <header>
+			 
+                        <h1 id="h1_header"> <%= workstation %> 服務機器人</h1>
+                        
+                    </header>  
+        
+        
+        <h1>Host: <%= host %></h1>
+        <h1>Key: <%= key %></h1> 
+        <h1>Password: <%= password %></h1>
+        <table class="table">
+                <thead>
+                  <tr>
+                    <th>機器人</th>         
+                    <th>IP</th>
+                    <th>機型</th>
+                    <th>&nbsp;</th>
+                  </tr>
+                </thead>
+                <tbody>
+                        <tr ng-repeat="robot in robotlist">
+                                <td>{{robot.robotname}}</td>
+                                <td>{{robot.robotIp}}</td>
+                                <td>{{robot.robotTypr}}</td>
+                                <td><button class="btn btn-danger" ng-click="remove(robot._id)">導航</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+        <div class="w3-show-inline-block">
+                <div class="w3-bar">
+                        <button class="w3-btn w3-black" type="button" ="Up" onclick="goforward()">前進</button>
+                        <button class="w3-btn w3-black" type="button" ="Up" onclick="gobackward()">後退</button>
+                        <button class="w3-btn w3-teal" type="button" ="Up" onclick="turnleft()">向左旋轉</button>
+                        <button class="w3-btn w3-teal" type="button" ="Up" onclick="turnright()">向右旋轉</button>
+                </div>
+                </div>
+        <!-- <form id="c2356" >
+                <div class="MoveButtonsForm">
+                    <button class="UpButton" type="button" ="Up" onclick="goforward()">Up</button>
+                    <button class="DownButton" type="button" ="Up" onclick="gobackward()">Down</button>
+                    <button class="LeftButton" type="button" ="Up" onclick="turnleft()">Left</button>
+                    <button class="RightButton" type="button" ="Up" onclick="turnright()">Right</button>
+                </div>
+            </form> -->
+        <!-- <h3  id="poseX"></h3>
+        <h3  id="poseY"></h3>
+        <h3  id="poseLinVel"></h3>
+        <h3  id="poseTheta"></h3>
+        <h3  id="poseAngVel"></h3>
+        <h3 id="feedback"></h3> -->
+        <h3  id="movebaseStatus">Status:</h3>
+        <h3 >2D Map and Control Window</h3>
+       
+        <div  id="nav2dmap"></div>
+        <!-- <form id="c2356" >
+            <div class="MoveButtonsForm">
+                <button class="UpButton" type="button" ="Up" onclick="goforward()">Up</button>
+                <button class="DownButton" type="button" ="Up" onclick="gobackward()">Down</button>
+                <button class="LeftButton" type="button" ="Up" onclick="turnleft()">Left</button>
+                <button class="RightButton" type="button" ="Up" onclick="turnright()">Right</button>
+            </div>
+        </form> -->
+        
+        <!-- <div class="camCanvas" id="mjpeg"></div> -->
+        <div class="w3-show-inline-block">
+                <div class="w3-bar">
+                <button class="w3-btn w3-border" type="button" ="Up" onclick="MapZoomFunc()">放大</button>
+                <button class="w3-btn w3-border" type="button" ="Up" onclick="MapPanFunc()">縮小</button>
+                <button class="w3-btn w3-border" type="button" ="Up" onclick="cancelGoalFunc()">Cancel</button>
+            </div>
+        </div>
+    </div>
+        <script type="text/javascript" src="http://localhost:3000/javascripts/rosjsScripts/eventemitter2.min.js"></script>
+        <script type="text/javascript" src="http://localhost:3000/javascripts/rosjsScripts/roslib.min.js"></script>
+        <script type="text/javascript" src="http://localhost:3000/javascripts/rosjsScripts/easeljs.min.js"></script>
+        <script type="text/javascript" src="http://localhost:3000/javascripts/rosjsScripts/ros2d.min.js"></script>
+        <!-- <script type="text/javascript" src="./rosjsScripts/mjpegcanvas.min.js"></script> -->
+        <script type="text/javascript" src="http://localhost:3000/javascripts/rosjsScripts/nav2d.js"></script>
+        <script type="text/javascript" src="http://localhost:3000/javascripts/rosjsScripts/robotcontrol.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+        <script src="http://localhost:3000/controller/robotctrl.js"></script>
+
+    </body>
+<html>
